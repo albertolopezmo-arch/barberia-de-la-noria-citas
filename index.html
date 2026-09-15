@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#101413">
+  <meta name="description" content="Reserva online tu día y hora en Florido Style.">
+  <meta property="og:type" content="website">
+  <meta property="og:locale" content="es_ES">
+  <meta property="og:title" content="Citas Florido Style">
+  <meta property="og:description" content="Reserva online tu día y hora en Florido Style.">
+  <meta property="og:url" content="https://albertolopezmo-arch.github.io/florido-style-citas/index.html">
+  <meta property="og:image" content="https://albertolopezmo-arch.github.io/florido-style-citas/assets/citas-florido-style-social.png?v=2">
+  <meta property="og:image:alt" content="Citas Florido Style · Reserva online tu día y hora">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Citas Florido Style">
+  <meta name="twitter:description" content="Reserva online tu día y hora en Florido Style.">
+  <meta name="twitter:image" content="https://albertolopezmo-arch.github.io/florido-style-citas/assets/citas-florido-style-social.png?v=2">
+  <title>Citas Florido Style</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <section id="welcome-splash" class="welcome-splash" aria-label="Bienvenida a Florido Style">
+    <img src="assets/portada-florido-style.png" alt="Florido Style Barbería">
+    <div class="agenda-loading" role="status" aria-label="Cargando agenda">
+      <div class="barber-progress" aria-hidden="true"><i></i></div>
+      <span>Cargando agenda</span>
+    </div>
+  </section>
+
+  <header class="topbar">
+    <a class="brand noria-brand" href="#" aria-label="La Barbería de la Noria, inicio">
+      <img class="brand-logo noria-logo" src="assets/logo-barberia-de-la-noria.png" alt="La Barbería de la Noria, calidad y profesional, unisex">
+    </a>
+    <div class="open-pill"><span></span> Citas de lunes a viernes</div>
+  </header>
+
+  <main>
+    <section class="intro">
+      <p class="eyebrow">RESERVA ONLINE</p>
+      <h1>Tu próximo corte,<br><em>a un par de clics.</em></h1>
+      <p>Elige servicio, día y hora. Confirmaremos tu cita al instante.</p>
+    </section>
+
+    <section class="booking-card" aria-labelledby="booking-title">
+      <div class="card-heading">
+        <div><span>AGENDA</span><h2 id="booking-title">Reserva tu cita</h2></div>
+        <div class="price" id="headline-price">Desde 5 €<small>según servicio</small></div>
+      </div>
+
+      <form id="booking-form" novalidate>
+        <fieldset>
+          <legend><span>1</span> Elige el servicio</legend>
+          <div id="service-grid" class="service-grid"><p class="empty-state">Cargando servicios…</p></div>
+        </fieldset>
+
+        <fieldset>
+          <legend><span>2</span> Elige el día</legend>
+          <div class="booking-calendar" aria-label="Calendario de citas">
+            <div class="calendar-heading">
+              <button id="calendar-prev" type="button" aria-label="Mes anterior">‹</button>
+              <strong id="calendar-month"></strong>
+              <button id="calendar-next" type="button" aria-label="Mes siguiente">›</button>
+            </div>
+            <div class="calendar-weekdays" aria-hidden="true"><span>L</span><span>M</span><span>X</span><span>J</span><span>V</span><span>S</span><span>D</span></div>
+            <div id="calendar-days" class="calendar-days" aria-live="polite"></div>
+            <input id="booking-date" type="hidden" required>
+          </div>
+          <p class="hint">Abrimos de lunes a viernes.</p>
+          <p id="date-error" class="error" role="alert"></p>
+        </fieldset>
+
+        <fieldset>
+          <legend><span>3</span> Elige la hora</legend>
+          <div id="slots" class="slots" aria-live="polite">
+            <p class="empty-state">Selecciona primero un día para consultar las horas disponibles.</p>
+          </div>
+          <p id="slot-error" class="error" role="alert"></p>
+        </fieldset>
+
+        <fieldset>
+          <legend><span>4</span> Tus datos</legend>
+          <div class="details-grid">
+            <label><span>Nombre</span><input id="customer-name" autocomplete="name" maxlength="60" placeholder="Tu nombre" required></label>
+            <label><span>Teléfono</span><input id="customer-phone" type="tel" autocomplete="tel" maxlength="20" placeholder="600 000 000" required></label>
+          </div>
+          <label class="privacy-check">
+            <input id="privacy-check" type="checkbox" required>
+            <span>Acepto que mis datos se utilicen únicamente para gestionar la cita. <a href="privacy.html" target="_blank">Ver privacidad</a>.</span>
+          </label>
+          <p id="form-error" class="error" role="alert"></p>
+        </fieldset>
+
+        <div class="summary" id="summary">
+          <div><small>TU CITA</small><strong id="summary-service">Corte de pelo</strong><span id="summary-when">Selecciona día y hora</span></div>
+          <strong id="summary-price">—</strong>
+        </div>
+        <button class="primary-button" id="submit-button" type="submit">Confirmar cita <span>→</span></button>
+      </form>
+    </section>
+
+    <section class="hours" aria-label="Horario">
+      <div><span>HORARIO</span><strong>Lunes a viernes</strong></div>
+      <div><strong>10:00–14:00</strong><small>Mañanas</small></div>
+      <div><strong>16:00–19:00</strong><small>Tardes</small></div>
+    </section>
+  </main>
+
+  <footer><strong>Florido Style</strong><span>Reserva fácil. Estilo a tu manera.</span><a class="professional-button" href="admin.html">Acceso profesional <b>→</b></a></footer>
+
+  <dialog id="confirmation-dialog">
+    <div class="success-icon">✓</div>
+    <p class="eyebrow">CITA CONFIRMADA</p>
+    <h2>¡Te esperamos!</h2>
+    <p id="confirmation-text"></p>
+    <div class="calendar-actions">
+      <button id="add-google-calendar" class="calendar-button" type="button">Abrir en Google Calendar</button>
+      <button id="download-calendar" class="calendar-button secondary-calendar" type="button">iPhone u otro calendario</button>
+      <small>En iPhone, abre el archivo descargado y pulsa «Añadir».</small>
+    </div>
+    <button id="close-dialog" class="primary-button" type="button">Entendido</button>
+  </dialog>
+
+  <script src="config.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

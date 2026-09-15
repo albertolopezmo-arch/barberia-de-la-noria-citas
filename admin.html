@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#101413">
+  <meta name="robots" content="noindex,nofollow">
+  <title>Agenda privada · Florido Style</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="admin.css">
+</head>
+<body class="admin-body">
+  <header class="topbar admin-topbar">
+    <a class="brand noria-brand" href="index.html" aria-label="La Barbería de la Noria, volver a las reservas"><img class="brand-logo noria-logo" src="assets/logo-barberia-de-la-noria.png" alt="La Barbería de la Noria, calidad y profesional, unisex"></a>
+    <button id="logout-button" class="ghost-button" type="button" hidden>Cerrar sesión</button>
+  </header>
+
+  <main class="admin-main">
+    <section id="login-view" class="login-card">
+      <p class="eyebrow">ACCESO PRIVADO</p>
+      <h1>Agenda del peluquero</h1>
+      <p>Inicia sesión para consultar clientes y gestionar las horas disponibles.</p>
+      <form id="login-form">
+        <label><span>Correo</span><input id="admin-email" type="email" autocomplete="username" required></label>
+        <label><span>Contraseña</span><input id="admin-password" type="password" autocomplete="current-password" required></label>
+        <p id="login-error" class="error" role="alert"></p>
+        <button class="primary-button" type="submit">Entrar en la agenda</button>
+      </form>
+    </section>
+
+    <section id="dashboard-view" hidden>
+      <div class="dashboard-heading">
+        <div><p class="eyebrow">PANEL PRIVADO</p><h1>Agenda</h1><p id="day-label"></p></div>
+        <label class="admin-date"><span>Consultar fecha</span><input id="admin-date" type="date"></label>
+      </div>
+
+      <div class="stats-grid">
+        <article><small>Citas confirmadas</small><strong id="confirmed-count">0</strong></article>
+        <button id="show-available-slots" class="stat-button" type="button"><small>Huecos disponibles</small><strong id="available-count">0</strong><span>Ver horas</span></button>
+        <article><small>Ingresos previstos</small><strong id="revenue-count">0 €</strong></article>
+      </div>
+
+      <div class="admin-grid">
+        <section class="admin-panel">
+          <div class="panel-heading"><div><p class="eyebrow">CLIENTES</p><h2>Citas del día</h2></div><button id="refresh-button" class="ghost-button" type="button">Actualizar</button></div>
+          <div id="appointments-list" class="appointment-list" aria-live="polite"></div>
+        </section>
+
+        <aside class="admin-panel block-panel">
+          <p class="eyebrow">BLOQUEAR AGENDA</p>
+          <h2>Cerrar disponibilidad</h2>
+          <p>Bloquea todo el día o una hora concreta. Las citas que ya existan no se cancelarán.</p>
+          <form id="block-form">
+            <label><span>Qué quieres bloquear</span>
+              <select id="block-time">
+                <option value="">Día completo</option>
+                <option>10:00</option><option>11:00</option><option>12:00</option><option>13:00</option>
+                <option>16:00</option><option>17:00</option><option>18:00</option>
+              </select>
+            </label>
+            <label><span>Motivo opcional</span><input id="block-reason" maxlength="80" placeholder="Vacaciones, asunto personal…"></label>
+            <p id="block-error" class="error" role="alert"></p>
+            <button class="danger-button" type="submit">Bloquear agenda</button>
+          </form>
+          <button id="open-manual-booking" class="manual-button" type="button">＋ Añadir cita manual</button>
+          <div class="active-blocks"><h3>Bloqueos de este día</h3><div id="blocks-list"></div></div>
+        </aside>
+      </div>
+
+      <section class="admin-panel services-panel">
+        <div class="panel-heading"><div><p class="eyebrow">SERVICIOS Y PRECIOS</p><h2>Tratamientos y servicios</h2></div><button id="add-service" class="manual-button compact-button" type="button">＋ Añadir servicio</button></div>
+        <p class="panel-help">Los cambios se mostrarán automáticamente en la página de reservas.</p>
+        <div id="services-list" class="services-admin-list" aria-live="polite"></div>
+      </section>
+    </section>
+  </main>
+
+  <dialog id="cancel-dialog">
+    <p class="eyebrow">CANCELAR CITA</p>
+    <h2>¿Cancelar esta cita?</h2>
+    <p id="cancel-text"></p>
+    <div class="dialog-actions"><button id="dismiss-cancel" class="ghost-button" type="button">Volver</button><button id="confirm-cancel" class="danger-button" type="button">Sí, cancelar</button></div>
+  </dialog>
+
+  <dialog id="manual-booking-dialog">
+    <p class="eyebrow">NUEVA CITA</p>
+    <h2>Añadir cita manual</h2>
+    <p id="manual-date-label"></p>
+    <form id="manual-booking-form" class="manual-form">
+      <label><span>Nombre</span><input id="manual-name" maxlength="60" autocomplete="off" placeholder="Nombre del cliente" required></label>
+      <label><span>Teléfono <small>(opcional)</small></span><input id="manual-phone" type="tel" maxlength="20" autocomplete="off" placeholder="Sin teléfono"></label>
+      <label><span>Servicio</span><select id="manual-service" required></select></label>
+      <label><span>Hora elegida por el peluquero</span><input id="manual-time" type="time" step="300" required></label>
+      <p class="hint">Puedes introducir cualquier hora, incluso entre dos citas. La agenda te avisará si esa hora exacta ya está ocupada.</p>
+      <p id="manual-error" class="error" role="alert"></p>
+      <div class="dialog-actions"><button id="dismiss-manual" class="ghost-button" type="button">Cancelar</button><button id="save-manual" class="manual-button" type="submit">Guardar cita</button></div>
+    </form>
+  </dialog>
+
+  <dialog id="available-dialog">
+    <p class="eyebrow">AGENDA</p><h2>Huecos disponibles</h2><p id="available-date-label"></p>
+    <div id="available-slots-list" class="available-slots-list"></div>
+    <button id="close-available" class="primary-button" type="button">Cerrar</button>
+  </dialog>
+
+  <dialog id="service-dialog">
+    <p class="eyebrow">SERVICIO</p><h2 id="service-dialog-title">Añadir servicio</h2>
+    <form id="service-form" class="manual-form">
+      <input id="service-id" type="hidden">
+      <label><span>Nombre del servicio</span><input id="service-name" maxlength="80" required placeholder="Ej. Corte infantil"></label>
+      <label><span>Precio</span><input id="service-price" type="number" min="0" max="999" step="0.50" required></label>
+      <label><span>Duración aproximada</span><input id="service-duration" type="number" min="5" max="240" step="5" value="60" required></label>
+      <p id="service-error" class="error" role="alert"></p>
+      <div class="dialog-actions"><button id="dismiss-service" class="ghost-button" type="button">Cancelar</button><button class="manual-button" type="submit">Guardar cambios</button></div>
+    </form>
+  </dialog>
+
+  <script src="config.js"></script>
+  <script src="admin.js"></script>
+</body>
+</html>
