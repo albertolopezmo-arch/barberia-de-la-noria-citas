@@ -17,20 +17,19 @@ button, input { font: inherit; touch-action: manipulation; }
 button, label, a { -webkit-tap-highlight-color: transparent; }
 button:focus-visible, input:focus-visible, a:focus-visible { outline: 3px solid rgba(199,167,106,.55); outline-offset: 3px; }
 a { color: var(--accent); }
-.welcome-splash { position: fixed; inset: 0; z-index: 100; min-height: 100dvh; display: grid; place-items: center; overflow: hidden; background: #050706; transition: opacity .8s ease, visibility .8s ease; }
+.welcome-splash { position: fixed; inset: 0; z-index: 100; min-height: 100dvh; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 34px; overflow: hidden; padding: 28px; background: #000; transition: opacity .8s ease, visibility .8s ease; }
 .welcome-splash.closing { opacity: 0; visibility: hidden; pointer-events: none; }
-.welcome-splash img { position: relative; z-index: 1; display: block; width: 100%; height: 100%; object-fit: contain; }
-.agenda-loading { position: absolute; z-index: 2; left: 50%; bottom: calc(18px + env(safe-area-inset-bottom)); width: min(78%, 370px); transform: translateX(-50%); text-align: center; text-shadow: 0 2px 10px #000; }
+.welcome-splash img { position: relative; z-index: 1; display: block; width: min(94vw, 760px); height: auto; object-fit: contain; }
+.agenda-loading { position: relative; z-index: 2; width: min(78vw, 370px); text-align: center; text-shadow: 0 2px 10px #000; }
 .agenda-loading span { display: block; margin-top: 9px; color: #f7e4ae; font-size: 14px; font-weight: 700; letter-spacing: .08em; }
 .barber-progress { height: 14px; padding: 2px; overflow: hidden; border: 2px solid #d7ae4b; border-radius: 999px; background: #080a09; box-shadow: 0 3px 15px rgba(0,0,0,.65), inset 0 0 4px #000; }
 .barber-progress i { display: block; width: 100%; height: 100%; border-radius: inherit; background: repeating-linear-gradient(120deg, #1749c8 0 16px, #f5f5f2 16px 32px, #d62d35 32px 48px, #f5f5f2 48px 64px); background-size: 78px 100%; transform-origin: left; animation: barber-fill 2s linear forwards, barber-stripes .7s linear infinite; }
 @keyframes barber-fill { from { transform: scaleX(.03); } to { transform: scaleX(1); } }
 @keyframes barber-stripes { to { background-position: 78px 0; } }
 @media (min-width: 700px) {
-  .welcome-splash { padding: 32px; background: #0b0f0d; }
-  .welcome-splash::before { content: ""; position: absolute; inset: -30px; background: linear-gradient(rgba(4,7,6,.58), rgba(4,7,6,.84)), url("assets/referencia-barberia-de-la-noria.png") center / cover no-repeat; filter: blur(22px); transform: scale(1.06); }
-  .welcome-splash img { width: auto; height: min(820px, calc(100dvh - 64px)); max-width: min(520px, calc(100vw - 64px)); border-radius: 18px; box-shadow: 0 24px 80px rgba(0,0,0,.68); }
-  .agenda-loading { bottom: 46px; }
+  .welcome-splash { padding: 42px; background: #000; }
+  .welcome-splash::before { display: none; }
+  .welcome-splash img { width: min(760px, calc(100vw - 84px)); max-height: 42vh; border-radius: 0; box-shadow: none; }
 }
 .topbar { min-height: 82px; display: flex; align-items: center; justify-content: space-between; gap: 20px; padding: calc(16px + env(safe-area-inset-top)) max(24px, calc((100vw - 1080px) / 2)) 16px; border-bottom: 1px solid var(--line); background: rgba(13,17,16,.86); backdrop-filter: blur(16px); position: sticky; top: 0; z-index: 5; }
 .brand { color: inherit; text-decoration: none; display: flex; align-items: center; gap: 12px; }
