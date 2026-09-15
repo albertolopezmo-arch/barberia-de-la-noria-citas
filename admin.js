@@ -1,10 +1,10 @@
-const CFG = window.FLORIDO_CONFIG;
+const CFG = window.NORIA_CONFIG;
 const apiBase = `${CFG.SUPABASE_URL}/rest/v1`;
 const authBase = `${CFG.SUPABASE_URL}/auth/v1`;
 const publicHeaders = { apikey: CFG.SUPABASE_ANON_KEY, "Content-Type": "application/json" };
 const todayValue = new Date(Date.now() - new Date().getTimezoneOffset() * 60000).toISOString().slice(0, 10);
 const dateField = document.querySelector("#admin-date");
-let session = JSON.parse(sessionStorage.getItem("florido-admin-session") || "null");
+let session = JSON.parse(sessionStorage.getItem("noria-admin-session") || "null");
 let pendingCancellation = null;
 let currentAppointments = [];
 let currentSlots = [];
@@ -39,7 +39,7 @@ function showDashboard() {
 
 function logout() {
   session = null;
-  sessionStorage.removeItem("florido-admin-session");
+  sessionStorage.removeItem("noria-admin-session");
   document.querySelector("#login-view").hidden = false;
   document.querySelector("#dashboard-view").hidden = true;
   document.querySelector("#logout-button").hidden = true;
@@ -61,7 +61,7 @@ document.querySelector("#login-form").addEventListener("submit", async event => 
         password: document.querySelector("#admin-password").value
       })
     });
-    const isAdmin = await request(`${apiBase}/rpc/is_florido_admin`, {
+    const isAdmin = await request(`${apiBase}/rpc/is_noria_admin`, {
       method: "POST",
       headers: authHeaders(),
       body: "{}"
@@ -70,7 +70,7 @@ document.querySelector("#login-form").addEventListener("submit", async event => 
       session = null;
       throw new Error("Usuario sin permiso de administrador");
     }
-    sessionStorage.setItem("florido-admin-session", JSON.stringify(session));
+    sessionStorage.setItem("noria-admin-session", JSON.stringify(session));
     showDashboard();
   } catch {
     error.textContent = "Correo, contraseña o permisos incorrectos.";
@@ -90,9 +90,9 @@ async function loadDay() {
   document.querySelector("#appointments-list").innerHTML = '<p class="empty-admin">Cargando citas…</p>';
   try {
     const [appointments, blocks, slots] = await Promise.all([
-      request(`${apiBase}/appointments?select=id,customer_name,phone,service,appointment_time,price_eur,status&appointment_date=eq.${date}&status=eq.confirmed&order=appointment_time.asc`, { headers: authHeaders() }),
-      request(`${apiBase}/blocked_slots?select=id,block_time,reason&block_date=eq.${date}&order=block_time.asc.nullsfirst`, { headers: authHeaders() }),
-      request(`${apiBase}/rpc/get_available_slots`, { method: "POST", headers: authHeaders(), body: JSON.stringify({ p_date: date }) })
+      request(`${apiBase}/noria_appointments?select=id,customer_name,phone,service,appointment_time,price_eur,status&appointment_date=eq.${date}&status=eq.confirmed&order=appointment_time.asc`, { headers: authHeaders() }),
+      request(`${apiBase}/noria_blocked_slots?select=id,block_time,reason&block_date=eq.${date}&order=block_time.asc.nullsfirst`, { headers: authHeaders() }),
+      request(`${apiBase}/rpc/get_noria_available_slots`, { method: "POST", headers: authHeaders(), body: JSON.stringify({ p_date: date }) })
     ]);
     currentAppointments = appointments || [];
     currentSlots = slots || [];
@@ -151,7 +151,7 @@ document.querySelector("#confirm-cancel").addEventListener("click", async () => 
   const button = document.querySelector("#confirm-cancel");
   button.disabled = true;
   try {
-    await request(`${apiBase}/appointments?id=eq.${pendingCancellation.id}`, {
+    await request(`${apiBase}/noria_appointments?id=eq.${pendingCancellation.id}`, {
       method: "PATCH", headers: authHeaders({ Prefer: "return=minimal" }), body: JSON.stringify({ status: "cancelled" })
     });
     document.querySelector("#cancel-dialog").close();
@@ -166,7 +166,7 @@ document.querySelector("#block-form").addEventListener("submit", async event => 
   error.textContent = "";
   const time = document.querySelector("#block-time").value;
   try {
-    await request(`${apiBase}/blocked_slots`, {
+    await request(`${apiBase}/noria_blocked_slots`, {
       method: "POST",
       headers: authHeaders({ Prefer: "return=minimal" }),
       body: JSON.stringify({ block_date: dateField.value, block_time: time ? `${time}:00` : null, reason: document.querySelector("#block-reason").value.trim() || null })
@@ -205,7 +205,7 @@ manualForm.addEventListener("submit", async event => {
   saveManual.disabled = true;
   try {
     const selected = services.find(item => item.name === document.querySelector("#manual-service").value);
-    await request(`${apiBase}/appointments`, {
+    await request(`${apiBase}/noria_appointments`, {
       method: "POST",
       headers: authHeaders({ Prefer: "return=minimal" }),
       body: JSON.stringify({
@@ -238,7 +238,7 @@ function renderBlocks(items) {
     row.innerHTML = '<span></span><button class="unblock-button" type="button">Volver a abrir</button>';
     row.querySelector("span").textContent = label;
     row.querySelector("button").addEventListener("click", async () => {
-      await request(`${apiBase}/blocked_slots?id=eq.${item.id}`, { method: "DELETE", headers: authHeaders() });
+      await request(`${apiBase}/noria_blocked_slots?id=eq.${item.id}`, { method: "DELETE", headers: authHeaders() });
       await loadDay();
     });
     list.appendChild(row);
@@ -257,7 +257,7 @@ function fillServiceSelect(select) {
 
 async function loadServices() {
   try {
-    services = await request(`${apiBase}/florido_services?select=id,name,price_eur,duration_minutes,active&order=sort_order.asc,name.asc`, { headers: authHeaders() }) || [];
+    services = await request(`${apiBase}/noria_services?select=id,name,price_eur,duration_minutes,active&order=sort_order.asc,name.asc`, { headers: authHeaders() }) || [];
     renderServices();
   } catch {
     document.querySelector("#services-list").innerHTML = '<p class="empty-admin">Ejecuta primero la actualización de Supabase para gestionar servicios.</p>';
@@ -276,7 +276,7 @@ function renderServices() {
     row.querySelector(".toggle-service").textContent = service.active ? "Ocultar" : "Activar";
     row.querySelector(".edit-service").addEventListener("click", () => openServiceDialog(service));
     row.querySelector(".toggle-service").addEventListener("click", async () => {
-      await request(`${apiBase}/florido_services?id=eq.${service.id}`, { method: "PATCH", headers: authHeaders({ Prefer: "return=minimal" }), body: JSON.stringify({ active: !service.active }) });
+      await request(`${apiBase}/noria_services?id=eq.${service.id}`, { method: "PATCH", headers: authHeaders({ Prefer: "return=minimal" }), body: JSON.stringify({ active: !service.active }) });
       await loadServices();
     });
     list.appendChild(row);
@@ -306,7 +306,7 @@ document.querySelector("#service-form").addEventListener("submit", async event =
     duration_minutes: Number(document.querySelector("#service-duration").value)
   };
   try {
-    await request(`${apiBase}/florido_services${id ? `?id=eq.${id}` : ""}`, {
+    await request(`${apiBase}/noria_services${id ? `?id=eq.${id}` : ""}`, {
       method: id ? "PATCH" : "POST", headers: authHeaders({ Prefer: "return=minimal" }), body: JSON.stringify(payload)
     });
     serviceDialog.close();

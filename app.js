@@ -1,4 +1,4 @@
-const CONFIG = window.FLORIDO_CONFIG || {};
+const CONFIG = window.NORIA_CONFIG || {};
 const welcomeSplash = document.querySelector("#welcome-splash");
 let welcomeTimer;
 
@@ -27,7 +27,7 @@ let latestBooking = null;
 let availableServices = [];
 
 const isConnected = Boolean(CONFIG.SUPABASE_URL && CONFIG.SUPABASE_ANON_KEY);
-const localKey = "florido-style-demo-bookings";
+const localKey = "barberia-noria-demo-bookings";
 const today = new Date();
 const localToday = new Date(today.getTime() - today.getTimezoneOffset() * 60000).toISOString().slice(0, 10);
 let calendarCursor = new Date(today.getFullYear(), today.getMonth(), 1);
@@ -70,22 +70,22 @@ function downloadCalendarEvent(booking) {
   const lines = [
     "BEGIN:VCALENDAR",
     "VERSION:2.0",
-    "PRODID:-//Florido Style//Citas//ES",
+    "PRODID:-//La Barberia de la Noria//Citas//ES",
     "CALSCALE:GREGORIAN",
     "METHOD:PUBLISH",
     "X-WR-TIMEZONE:Europe/Madrid",
     "BEGIN:VEVENT",
-    `UID:${crypto.randomUUID()}@floridostyle`,
+    `UID:${crypto.randomUUID()}@barberialanoria`,
     `DTSTAMP:${stamp}`,
     `DTSTART;TZID=Europe/Madrid:${start}`,
     `DTEND;TZID=Europe/Madrid:${end}`,
-    `SUMMARY:${escapeCalendarText(`Cita en Florido Style · ${booking.service}`)}`,
-    `DESCRIPTION:${escapeCalendarText("Tu cita en Florido Style. Si no puedes asistir, contacta con la peluquería.")}`,
+    `SUMMARY:${escapeCalendarText(`Cita en La Barbería de la Noria · ${booking.service}`)}`,
+    `DESCRIPTION:${escapeCalendarText("Tu cita en La Barbería de la Noria. Si no puedes asistir, contacta con el establecimiento.")}`,
     "STATUS:CONFIRMED",
     "BEGIN:VALARM",
     "TRIGGER:-PT3H",
     "ACTION:DISPLAY",
-    "DESCRIPTION:Recordatorio de tu cita en Florido Style",
+    "DESCRIPTION:Recordatorio de tu cita en La Barbería de la Noria",
     "END:VALARM",
     "END:VEVENT",
     "END:VCALENDAR"
@@ -93,7 +93,7 @@ function downloadCalendarEvent(booking) {
   const file = new Blob([lines.join("\r\n")], { type: "text/calendar;charset=utf-8" });
   const link = document.createElement("a");
   link.href = URL.createObjectURL(file);
-  link.download = `cita-florido-style-${booking.date}-${booking.time.replace(":", "")}.ics`;
+  link.download = `cita-barberia-la-noria-${booking.date}-${booking.time.replace(":", "")}.ics`;
   document.body.appendChild(link);
   link.click();
   link.remove();
@@ -107,10 +107,10 @@ function openGoogleCalendar(booking) {
   const end = `${compactDate}T${String(hour + 1).padStart(2, "0")}${String(minute).padStart(2, "0")}00`;
   const params = new URLSearchParams({
     action: "TEMPLATE",
-    text: `Cita en Florido Style · ${booking.service}`,
+    text: `Cita en La Barbería de la Noria · ${booking.service}`,
     dates: `${start}/${end}`,
     ctz: "Europe/Madrid",
-    details: "Tu cita en Florido Style. Añade un aviso 3 horas antes si Google Calendar no lo propone automáticamente."
+    details: "Tu cita en La Barbería de la Noria. Añade un aviso 3 horas antes si Google Calendar no lo propone automáticamente."
   });
   window.open(`https://calendar.google.com/calendar/render?${params}`, "_blank", "noopener");
 }
@@ -138,7 +138,7 @@ function demoAvailableSlots(dateValue) {
 
 async function getAvailableSlots(dateValue) {
   if (!isConnected) return demoAvailableSlots(dateValue);
-  const rows = await supabaseRpc("get_available_slots", { p_date: dateValue });
+  const rows = await supabaseRpc("get_noria_available_slots", { p_date: dateValue });
   return rows.map(row => String(row.slot_time).slice(0, 5));
 }
 
@@ -157,7 +157,7 @@ async function getServices() {
     { name: "Limpieza facial", price_eur: 20, duration_minutes: 60 },
     { name: "Dermapen", price_eur: 30, duration_minutes: 60 }
   ];
-  return supabaseRpc("get_florido_services", {});
+  return supabaseRpc("get_noria_services", {});
 }
 
 function money(value) {
@@ -198,7 +198,7 @@ async function loadServices() {
 async function getBlockedDays(start, end) {
   if (!isConnected) return [];
   try {
-    const rows = await supabaseRpc("get_blocked_days", { p_start: start, p_end: end });
+    const rows = await supabaseRpc("get_noria_blocked_days", { p_start: start, p_end: end });
     return rows.map(row => row.block_date);
   } catch {
     const startDate = new Date(`${start}T12:00:00`);
@@ -305,7 +305,7 @@ async function refreshSlots() {
 
 async function createBooking(booking) {
   if (isConnected) {
-    return supabaseRpc("create_booking", {
+    return supabaseRpc("create_noria_booking", {
       p_customer_name: booking.name,
       p_phone: booking.phone,
       p_service: booking.service,
@@ -392,9 +392,9 @@ function registerBookingTool() {
   const context = document.modelContext;
   if (!context?.registerTool) return;
   Promise.resolve(context.registerTool({
-    name: "create_florido_style_booking",
-    title: "Reservar cita en Florido Style",
-    description: "Crea una cita real de una hora en Florido Style para un servicio, fecha y hora disponibles.",
+    name: "create_barberia_noria_booking",
+    title: "Reservar cita en La Barbería de la Noria",
+    description: "Crea una cita real en La Barbería de la Noria para un servicio, fecha y hora disponibles.",
     inputSchema: {
       type: "object",
       properties: {

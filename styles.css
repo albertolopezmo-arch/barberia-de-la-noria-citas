@@ -28,7 +28,7 @@ a { color: var(--accent); }
 @keyframes barber-stripes { to { background-position: 78px 0; } }
 @media (min-width: 700px) {
   .welcome-splash { padding: 32px; background: #0b0f0d; }
-  .welcome-splash::before { content: ""; position: absolute; inset: -30px; background: linear-gradient(rgba(4,7,6,.58), rgba(4,7,6,.84)), url("assets/portada-florido-style.png") center / cover no-repeat; filter: blur(22px); transform: scale(1.06); }
+  .welcome-splash::before { content: ""; position: absolute; inset: -30px; background: linear-gradient(rgba(4,7,6,.58), rgba(4,7,6,.84)), url("assets/referencia-barberia-de-la-noria.png") center / cover no-repeat; filter: blur(22px); transform: scale(1.06); }
   .welcome-splash img { width: auto; height: min(820px, calc(100dvh - 64px)); max-width: min(520px, calc(100vw - 64px)); border-radius: 18px; box-shadow: 0 24px 80px rgba(0,0,0,.68); }
   .agenda-loading { bottom: 46px; }
 }
